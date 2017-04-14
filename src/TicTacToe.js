@@ -22,6 +22,18 @@ class TicTacToe extends Component {
     }
   }
 
+  _resetBoard() {
+    var board = [
+      [' ', ' ', ' '],
+      [' ', ' ', ' '],
+      [' ', ' ', ' ']
+    ];
+    this.setState({
+      currentPlayer: 'x',
+      board: board
+    });
+  }
+
   render() {
     return(
       <View style={Style.container}>
@@ -38,7 +50,8 @@ class TicTacToe extends Component {
 
   _initBoard(){
     let views = [];
-
+    console.log("Initing");
+    console.log(this.state.board);
     for (var r = 0; r < 3; r ++) {
       let inputRow = [];
       for (var c = 0; c < 3; c ++) {
@@ -56,24 +69,88 @@ class TicTacToe extends Component {
 
   _onButtonPressed(r, c){
     if (this.state.board[r][c] === ' ') {
-      var newBoard = this.state.board;
-      newBoard[r][c] = this.state.currentPlayer;
-      var newPlayer = ' ';
-      if (this.state.currentPlayer === 'x') {
-        newPlayer = '0';
+      // Fill the cell with the current player
+      this.state.board[r][c] = this.state.currentPlayer;
+
+      if (this._checkRowsForWin()
+      || this._checkColumnsForWin()
+      || this._checkLeftDiagonalForWin()
+      || this._checkRightDiagonalForWin()) {
+        alert(this.state.currentPlayer + " is a winner");
+        this._resetBoard();
       } else {
-        newPlayer = 'x';
+        // Change the currrent player
+        if (this.state.currentPlayer === 'x') {
+          this.state.currentPlayer = '0';
+        } else {
+          this.state.currentPlayer = 'x';
+        }
+
+        this.setState({
+          board: this.state.board,
+          currentPlayer: this.state.currentPlayer
+        });
       }
-      this.setState({
-        board: newBoard,
-        currentPlayer: newPlayer
-      });
     }
 
   }
 
-  
 
+  _checkRowsForWin(){
+    for (var i = 0; i < 3; i++) {
+      var flag = true;
+      for (var j = 0; j < 3; j++) {
+        if(this.state.board[i][j] !== this.state.currentPlayer){
+          flag = false;
+          break;
+        }
+      }
+      if(flag === true){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  _checkColumnsForWin(){
+    for (var i = 0; i < 3; i++) {
+      var flag = true;
+      for (var j = 0; j < 3; j++) {
+        if(this.state.board[j][i] !== this.state.currentPlayer){
+          flag = false;
+          break;
+        }
+      }
+      if(flag === true){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  _checkLeftDiagonalForWin(){
+    var flag = true;
+    for (var i = 0; i < 3; i++) {
+      if(this.state.board[i][i] !== this.state.currentPlayer){
+        flag = false;
+        break;
+      }
+    }
+    return flag;
+  }
+
+  _checkRightDiagonalForWin(){
+    var flag = true;
+    var r = 0;
+    var c = 2;
+    for (var i = 0; i < 3; i++) {
+      if(this.state.board[r + i][c - i] !== this.state.currentPlayer){
+        flag = false;
+        break;
+      }
+    }
+    return flag;
+  }
 }
 
 AppRegistry.registerComponent('TicTacToe', () => TicTacToe);
